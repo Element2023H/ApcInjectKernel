@@ -1,6 +1,6 @@
 # APC Inject Native Process（Early Bird）
 
-<a href='./ReadMe_zh_cn.md'>中文</a> | EN
+<a href='./ReadMe.md'>中文</a> | EN
 
 ## Description
 * Using Early Bird APC to inject into Native Process which were not Protected Process.
