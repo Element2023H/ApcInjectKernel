@@ -2,6 +2,15 @@
 
 constexpr ULONG APCINJECT_MEM_TAG = 'mpAK';
 
+EXTERN_C NTSTATUS NTSYSAPI ZwGetNextThread(
+	HANDLE ProcessHandle,
+	HANDLE ThreadHandle,
+	ACCESS_MASK DesiredAccess,
+	ULONG HandleAttributes,
+	ULONG Flags,
+	PHANDLE NewThreadHandle
+	);
+
 WCHAR*
 KWstrnstr(
 	const WCHAR* src,
@@ -277,6 +286,61 @@ KGetProcessFirstEThread(
 	return Status;
 }
 
+// a improved version of KGetProcessFirstEThread
+NTSTATUS KGetProcessMainThread(HANDLE ProcessId, PETHREAD* ppThread)
+{
+	NTSTATUS status{ STATUS_SUCCESS };
+	PEPROCESS Process{ nullptr };
+	HANDLE hProcess{ nullptr };
+	HANDLE hMainThread{ nullptr };
+
+	if (ppThread == nullptr)
+	{
+		return STATUS_INVALID_ADDRESS;
+	}
+
+	status = PsLookupProcessByProcessId(ProcessId, &Process);
+
+	if (NT_SUCCESS(status))
+	{
+		status = ObOpenObjectByPointer(Process, OBJ_KERNEL_HANDLE, NULL, GENERIC_ALL, *PsProcessType, KernelMode, &hProcess);
+
+		if (NT_SUCCESS(status))
+		{
+			status = ZwGetNextThread(hProcess, nullptr, GENERIC_ALL, OBJ_KERNEL_HANDLE, 0, &hMainThread);
+		}
+	}
+
+	if (NT_SUCCESS(status))
+	{
+		PETHREAD MainThread{ nullptr };
+
+		status = ObReferenceObjectByHandle(hMainThread, THREAD_QUERY_LIMITED_INFORMATION, *PsThreadType, KernelMode, (PVOID*)&MainThread, NULL);
+
+		if (NT_SUCCESS(status))
+		{
+			*ppThread = MainThread;
+		}
+	}
+
+	if (hProcess != nullptr)
+	{
+		ZwClose(hProcess);
+	}
+
+	if (Process != nullptr)
+	{
+		ObDereferenceObject(Process);
+	}
+
+	if (hMainThread != nullptr)
+	{
+		ZwClose(hMainThread);
+	}
+
+	return status;
+}
+
 static
 VOID
 ApcInjectKernelRoutine(
@@ -385,7 +449,8 @@ ApcInjectNative(
 			break;
 		}
 
-		status = KGetProcessFirstEThread(ProcessId, &pEthread);
+		status = KGetProcessMainThread(ProcessId, &pEthread);
+
 		if (!NT_SUCCESS(status))
 		{
 			DbgPrint("KGetProcessFirstEThread failed line:%d in %s\r\n", __LINE__, __FUNCTION__);
