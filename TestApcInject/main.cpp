@@ -1,6 +1,7 @@
 #include "../ApcInject.h"
 
 UNICODE_STRING g_InjectDll;
+UNICODE_STRING g_InjectDll32;
 
 EXTERN_C
 {
@@ -56,6 +57,12 @@ PloadImageNotifyRoutine(
 			//DbgBreakPoint();
 			ApcInjectNativeProcess(FullImageName, ProcessId, ImageInfo, &g_InjectDll);
 		}
+		else if (KWstrnstr(pProcessImage->Buffer, L"SysWOW64\\notepad.exe") &&
+			KWstrnstr(FullImageName->Buffer, L"SysWOW64\\ntdll.dll"))
+		{
+			//DbgBreakPoint();
+			ApcInjectWow64Process(FullImageName, ProcessId, ImageInfo, &g_InjectDll32);
+		}
 
 		ExFreePool(pProcessImage);
 		ObDereferenceObject(pProcess);
@@ -82,6 +89,7 @@ DriverEntry(
 	ExInitializeDriverRuntime(DrvRtPoolNxOptIn);
 
 	RtlInitUnicodeString(&g_InjectDll, L"C:\\InjectDir\\InjectDll_x64.dll");
+	RtlInitUnicodeString(&g_InjectDll32, L"C:\\InjectDir\\InjectDll_x86.dll");
 
 	
 	DriverObject->DriverUnload = DriverUnload;

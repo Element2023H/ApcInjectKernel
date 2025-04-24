@@ -3,14 +3,11 @@
 <a href='./ReadMe.md'>中文</a> | EN
 
 ## Description
-* Using Early Bird APC to inject into Native Process which were not Protected Process.
+* Using Early Bird APC to inject into Native and Wow64 Process which were not Protected Process.
 * Reference: [BlackBone](https://github.com/DarthTon/Blackbone) 
 
-[!NOTE]
-Wow64 injection is not implement in this version
-
-[!NOTE]
-the code is only tested on notepad.exe, user can expand the code to filter any other processes by there own
+>[!NOTE]
+>the code is only tested on notepad.exe, user can expand the code to filter any other processes by there own
 
 ## Statement
 Enjoy it !!!

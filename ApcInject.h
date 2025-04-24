@@ -177,6 +177,11 @@ typedef struct _SYSTEM_THREAD_INFORMATION {
 
 EXTERN_C
 {
+NTKERNELAPI
+PVOID
+NTAPI
+PsGetCurrentProcessWow64Process();
+
 NTSYSAPI
 VOID
 NTAPI
@@ -227,6 +232,14 @@ VOID
 NTAPI
 ApcInjectNativeProcess(
 	PUNICODE_STRING FullImageName,
+	HANDLE ProcessId,
+	PIMAGE_INFO ImageInfo,
+	PUNICODE_STRING InjectDllPath);
+
+VOID
+NTAPI 
+ApcInjectWow64Process(
+	PUNICODE_STRING FullImageName, 
 	HANDLE ProcessId,
 	PIMAGE_INFO ImageInfo,
 	PUNICODE_STRING InjectDllPath);
