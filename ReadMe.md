@@ -3,8 +3,7 @@
 中文|<a href='./ReadMe_EN.md'>EN</a>
 
 ## 说明
-* 使用Early Bird APC注入64位进程（非Protected Process）
-* 32位进程注入待补充... .. .
+* 使用Early Bird APC注入64位与32位进程（非Protected Process）
 * 参考链接[BlackBone](https://github.com/DarthTon/Blackbone) 
 
 ## 测试

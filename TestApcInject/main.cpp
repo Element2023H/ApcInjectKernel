@@ -6,6 +6,7 @@ UNICODE_STRING g_InjectDll32;
 
 HANDLE g_hFile{ nullptr };
 
+
 EXTERN_C
 {
 
@@ -94,7 +95,6 @@ DriverEntry(
 
 	RtlInitUnicodeString(&g_InjectDll, L"C:\\InjectDir\\InjectDll_x64.dll");
 	RtlInitUnicodeString(&g_InjectDll32, L"C:\\InjectDir\\InjectDll_x86.dll");
-
 
 	
 	DriverObject->DriverUnload = DriverUnload;
