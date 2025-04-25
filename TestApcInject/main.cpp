@@ -25,12 +25,6 @@ PloadImageNotifyRoutine(
 	{
 		return;
 	}
-	
-	// skip wow64 injection
-	if (ImageInfo->MachineTypeMismatch)
-	{
-		return;
-	}
 
 	NTSTATUS status{ STATUS_SUCCESS };
 	PUNICODE_STRING pProcessImage{ nullptr };
