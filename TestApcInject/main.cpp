@@ -1,7 +1,11 @@
 #include "../ApcInject.h"
+#include "Log.hpp"
 
 UNICODE_STRING g_InjectDll;
 UNICODE_STRING g_InjectDll32;
+
+HANDLE g_hFile{ nullptr };
+
 
 EXTERN_C
 {
@@ -32,12 +36,14 @@ PloadImageNotifyRoutine(
 	status = PsLookupProcessByProcessId(ProcessId, &pProcess);
 	if (!NT_SUCCESS(status))
 	{
+		LOGERROR(status, "PsLookupProcessByProcessId failed. ProcessId: %d", HandleToULong(ProcessId));
 		return;
 	}
 
 	status = SeLocateProcessImageName(pProcess, &pProcessImage);
 	if (!NT_SUCCESS(status))
 	{
+		LOGERROR(status, "SeLocateProcessImageName failed. ProcessId: %d", HandleToULong(ProcessId));
 		ObDereferenceObject(pProcess);
 		return;
 	}
@@ -68,6 +74,11 @@ VOID
 DriverUnload(PDRIVER_OBJECT DriverObject)
 {
 	UNREFERENCED_PARAMETER(DriverObject);
+	if (g_hFile)
+	{
+		ZwClose(g_hFile);
+		g_hFile = nullptr;
+	}
 	PsRemoveLoadImageNotifyRoutine(reinterpret_cast<PLOAD_IMAGE_NOTIFY_ROUTINE>(PloadImageNotifyRoutine));
 }
 
@@ -88,6 +99,11 @@ DriverEntry(
 	
 	DriverObject->DriverUnload = DriverUnload;
 
+	status = InitializeLogFile(L"\\??\\C:\\desktop\\Log.txt");
+	if (!NT_SUCCESS(status))
+	{
+		DbgPrint("status = %08X", status);
+	}
 
 	status = PsSetLoadImageNotifyRoutine(reinterpret_cast<PLOAD_IMAGE_NOTIFY_ROUTINE>(PloadImageNotifyRoutine));
 
