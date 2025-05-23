@@ -102,13 +102,15 @@ DriverEntry(
 	status = InitializeLogFile(L"\\??\\C:\\desktop\\Log.txt");
 	if (!NT_SUCCESS(status))
 	{
-		DbgPrint("status = %08X", status);
+		//DbgPrint("status = %08X", status);
+		LOGERROR(status, "InitializeLogFile");
 	}
 
 	status = PsSetLoadImageNotifyRoutine(reinterpret_cast<PLOAD_IMAGE_NOTIFY_ROUTINE>(PloadImageNotifyRoutine));
 	if (!NT_SUCCESS(status))
 	{
-		DbgPrint("PsSetLoadImageNotifyRoutine failed status = %08X", status);
+		//DbgPrint("PsSetLoadImageNotifyRoutine failed status = %08X", status);
+		LOGERROR(status, "PsSetLoadImageNotifyRoutine failed");
 	}
 
 
