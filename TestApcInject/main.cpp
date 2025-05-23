@@ -106,7 +106,10 @@ DriverEntry(
 	}
 
 	status = PsSetLoadImageNotifyRoutine(reinterpret_cast<PLOAD_IMAGE_NOTIFY_ROUTINE>(PloadImageNotifyRoutine));
-
+	if (!NT_SUCCESS(status))
+	{
+		DbgPrint("PsSetLoadImageNotifyRoutine failed status = %08X", status);
+	}
 
 
 	return status;
